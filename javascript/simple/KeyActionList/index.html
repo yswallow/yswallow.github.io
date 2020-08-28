@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <script src="./KeyActionList.js" defer></script>
+        <meta charset="UTF-8">
+        <title>KeyActionList</title>
+    </head>
+    <body>
+        <select id="category"></select>
+        <select id="action"></select>
+        <div>
+            設定値: <span id="output"></span>
+        </div>
+        <script>
+selection = document.getElementById("action");
+output = document.getElementById("output");
+selection.addEventListener("change", (e)=>{
+    output.innerText = e.target.value;
+});
+        </script>
+    </body>
+</html>

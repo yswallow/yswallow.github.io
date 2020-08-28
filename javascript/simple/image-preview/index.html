@@ -1,0 +1,47 @@
+<html>
+    <body>
+        <canvas id="draw-area" width="480" height="320"></canvas>
+        <input id="select-image" type="file" accept="image/*">
+        <div id="filename"></div>
+        <img id="imagePreview">
+        <script>
+drawingArea = document.getElementById("draw-area");
+imageSelection = document.getElementById("select-image");
+filenameOutput = document.getElementById("filename");
+imagePreview = document.getElementById("imagePreview");
+
+if(window.FileReader && window.Image) {
+    reader = new FileReader();
+
+    reader.addEventListener("load", (fileReaderEvent)=>{
+        console.log(fileReaderEvent);
+        imagePreview.src = fileReaderEvent.target.result;
+        image.src = fileReaderEvent.target.result;
+    });
+
+    const image = new Image();
+    image.addEventListener("load", ()=>{
+        zoom = 480 / image.naturalWidth;
+        drawingArea.height = image.naturalHeight * zoom;
+        ctx = drawingArea.getContext("2d");
+        ctx.scale(zoom,zoom);
+        ctx.drawImage(image, 0, 0);
+        ctx.scale(1,1);
+    });
+
+    imageSelection.addEventListener("change", (e)=>{
+        filenameOutput.innerText = e.target.value;
+        file = e.target.files[0];
+        reader.readAsDataURL(file);
+    });
+}
+
+
+        </script>
+        <style>
+canvas#draw-area {
+    border: solid 3px;
+}
+        </style>
+    </body>
+</html>

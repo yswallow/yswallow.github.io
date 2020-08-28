@@ -1,0 +1,132 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Categorize</title>
+    </head>
+    <body>
+        <div id="display-area"></div>
+        <div  class="box" id="button-area">
+
+        </div>
+        <div class="box">
+            <input type="text" id="category-name">
+            <button id="add-button">カテゴリーを追加</button>        
+        </div>
+        <div class="wrapper">
+            <div class="box">
+                <h3>入力</h3>
+                <button id="analyze">テキストを解析</button>
+                <textarea id="paste"></textarea>
+            </div>
+            <div class="box">
+                <h3>出力</h3>
+                <textarea id="output"></textarea>
+            </div>
+        </div>
+        
+        <script>
+analyzeButton = document.getElementById("analyze");
+addButton = document.getElementById("add-button");
+inputArea = document.getElementById("paste");
+outputArea = document.getElementById("output");
+categoryName = document.getElementById("category-name");
+buttonArea = document.getElementById("button-area");
+displayArea = document.getElementById("display-area");
+
+addButton.addEventListener("click", (e)=>{
+    category = {
+        button: document.createElement("button"),
+        name: categoryName.value,
+        keyActions: [],
+    };
+    name = categoryName.value;
+    Categories.push(category);
+    category.button.innerText = name;
+    category.button.category = category;
+    category.button.addEventListener("click", (e)=>{
+        c = e.target.category;
+        c.keyActions.push(KeyActions.getCurrentAction());
+        KeyActions.next();
+        Categories.output();
+    });
+    buttonArea.appendChild(category.button);
+});
+
+Categories = [];
+Categories.output = function() {
+    str = "Category = document.getElementById('category'); \n";
+    str += "Category.addCategory = function(value, name) {\
+    c = document.createElement('option');\
+    c.setAttribute('value', value);\
+    c.innerText = name;\
+    this.appendChild(c);\
+    };\n\n"
+    str += "Category.addCategory('','--カテゴリーを選択--');\n\n";
+    
+    for(i=0;i<this.length;i++) {
+        str += "Category.addCategory('"+i+"','"+this[i].name+"');\n"
+    }
+
+    str += "\n\nAction = document.getElementById('action');\n";
+    str += "Action.addOption = function(value, name) {\
+    n = document.createElement('option');\
+    n.setAttribute('value',value);\
+    n.innerText = name;\
+    this.appendChild(n);\
+    };\n\n";
+    str += "document.getElementById('category').addEventListener('change', (e)=>{\n";
+    str += "Action.innerText = '';\n";
+    str += "switch(e.target.value) {\n";
+    for(i=0;i<this.length;i++) {
+        str += "case '"+i+"':\n";
+        for(j=0; j<this[i].keyActions.length; j++) {
+            keyAction = this[i].keyActions[j];
+            str += "Action.appendOption('"+keyAction.num+"','"+keyAction.name+"');\n";
+        }
+        str += "break;\n";
+    }
+    str += "}\n";
+    str += "});";
+
+    outputArea.value = str;
+    return str;
+};
+
+KeyActions = [];
+KeyActions.next = function() {
+    displayArea.innerText = KeyActions[0].name;    
+};
+KeyActions.getCurrentAction = function() {
+    return this.shift();
+};
+
+analyzeButton.addEventListener("click", (e)=>{
+    text = inputArea.value;
+    lines = text.split("\n");
+    for(i=0;i<lines.length;i++) {
+        keyAction = {};
+        ary = lines[i].split("\t");
+        keyAction.num = parseInt(ary.pop());
+        keyAction.name = ary.join(" ");
+        KeyActions.push(keyAction);
+    }
+    KeyActions.next();
+});
+        </script>
+        
+        <style>
+.box {
+    display: block;
+    padding: 5px;
+}
+
+.wrapper {
+    display: flex;
+}
+
+textarea {
+    height: 400px;
+}
+        </style>
+    </body>
+</html>
