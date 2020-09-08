@@ -1,0 +1,16 @@
+div.box {
+    border: solid;
+}
+
+textarea#csv-input {
+    height: 40em;
+    width: 80em;
+}
+
+button.add-category {
+    background: red;
+}
+
+div.category {
+    border: solid 1px;
+}

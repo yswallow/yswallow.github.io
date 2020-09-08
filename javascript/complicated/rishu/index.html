@@ -1,0 +1,112 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="../../../common/style.css">
+        <link rel="stylesheet" href="./style.css">
+    </head>
+    <body>
+        <script src="./rishu.js"></script>
+        <script src="../../../common/common.js"></script>
+        <div class="box">
+            <button id="start">開始</button>
+            <div id="active-tanni"></div>
+        </div>
+        <div class="wrapper">
+            <div class="box">
+                <div>
+                    専門科目
+                </div>
+                <div class="wrapper">
+                    <div class="box">
+                        <label>必修科目</label>
+                        <button class="add-category" id="add-senmon-hisshu">追加</button>
+                    </div>
+
+                    <div class="box">
+                        <label>選択科目</label>
+                        <button class="add-category" id="add-senmon-sentaku">追加</button>
+                    </div>
+
+                    <div class="box">
+                        <label>自由科目</label>
+                        <button class="add-category" id="add-senmon-jiyu">追加</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box">
+                <div>
+                    専門基礎科目
+                </div>
+                <div class="wrapper">
+                    <div class="box">
+                        <label>必修科目</label>
+                        <button class="add-category" id="add-senmon-kiso-hisshu">追加</button>
+                    </div>
+
+                    <div class="box">
+                        選択科目
+                        <button class="add-category" id="add-senmon-kiso-sentaku">追加</button>
+                    </div>
+
+                    <div class="box">
+                        自由科目
+                        <button class="add-category" id="add-senmon-kiso-jiyu">追加</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box">
+                <div>
+                    基礎科目
+                </div>
+                <div class="wrapper">
+                    <div class="box">
+                        共通科目
+                        <div class="wrapper">
+                            <div class="box">
+                                必修科目
+                                <button class="add-category" id="add-kiso-kyotsu-hisshu">追加</button>
+                            </div>
+
+                            <div class="box">
+                                自由科目
+                                <button class="add-category" id="add-kiso-kyotsu-jiyu">追加</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="box">
+                        関連科目
+                        <div class="wrapper">
+                            <div class="box">
+                                必修科目
+                            </div>
+
+                            <div class="box">
+                                自由科目
+                                <button class="add-category" id="add-kiso-kanren-jiyu">追加</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <label for="category-name">カテゴリー名: </label>
+            <input id="category-name" type="text">
+            <label for="category-tannisu">単位数: </label>
+            <input id="category-tannisu" type="text">
+        </div>
+        <div id="uncategorized-tannis">
+
+        </div>
+        <div>
+            <div>
+                SIRS*********.csvの中身をコピペ:
+            </div>
+            <textarea id="csv-input"></textarea>
+        </div>
+        
+    </body>
+</html>
