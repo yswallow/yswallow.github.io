@@ -1,0 +1,95 @@
+<html>
+<head>
+    <title>Canvas 3D-like drawing</title>
+</head>
+
+<body>
+    <div id="canvas-wrapper">
+        <canvas id="drawing" width="800" height="450"></canvas>
+    </div>
+    <button id="stop">停止</button>
+<style>
+canvas {
+    border: 4px solid;
+    background-color: transparent;
+}
+
+#canvas-wrapper {
+    width: min-content;
+    background-image: url(./field.svg);
+}
+</style>
+<script>
+elements = {
+    canvas: document.getElementById("drawing"),
+    stop: document.getElementById("stop"),
+};
+
+ctx = elements.canvas.getContext("2d");
+
+svgReader = new FileReader();
+svgReader.addEventListener("load", (e)=>{
+    elements.canvas.style.backgroundImage = "url("+e.target.result+")";
+});
+
+function drawShadow(x, z){
+    // 0<=x<=7,0<=z<=3 
+    y_center = 320 + 37*z;
+    rx = y_center/4 - 20;
+    x_center = 480-y_center+x*rx;
+    ry = z*3+9;
+
+    svg = `<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<radialGradient id="ShadowGradient">
+    <stop offset="5%" stop-color="black" />
+    <stop offset="95%" stop-color="slategray" />
+</radialGradient>
+</defs>
+
+<ellipse fill="url(#ShadowGradient)" cx="${x_center}" cy="${y_center}" rx="${rx/2}" ry="${ry}"/>
+
+</svg>`
+
+    b = new Blob([svg], {type: "image/svg+xml"});
+    svgReader.readAsDataURL(b);
+}
+
+function drawRect(x,y,z) {
+    // 0<=x<=7, 0<=(y,z)<=3
+    x0 = 120-z*37;
+    dx = (500+72*z)/8;
+    y0 = 16-z*4;
+    dy = 70+12*z;
+
+    if(z==0) {
+        ctx.fillStyle = "red";
+    } else if(z==1) {
+        ctx.fillStyle = "yellow";
+    } else if(z==2) {
+        ctx.fillStyle = "green";
+    } else if(z==3) {
+        ctx.fillStyle = "blue";
+    }
+    ctx.clearRect(0,0,800,450);
+    ctx.fillRect(x0+dx*x, y0+dy*y, dx, dy);
+}
+
+
+function iter() {
+    let x = parseInt(Math.random()*100)%8;
+    let y = parseInt(Math.random()*100)%4;
+    let z = parseInt(Math.random()*100)%4;
+    drawShadow(x,z);
+    drawRect(x,y,z);
+}
+
+var interv = setInterval(iter, 1000);
+
+elements.stop.addEventListener("click", (e)=>{
+    clearInterval(interv);
+});
+
+</script>
+</body>
+</html>
