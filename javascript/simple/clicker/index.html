@@ -1,0 +1,158 @@
+<html>
+    <head>
+        <title>Clicker</title>
+    </head>
+
+    <body>
+        <table id="clicker-outline">
+            
+        </table>
+        <p>Vertical: <input type="number" id="vSplit" min="1" value="1"></p>
+        <p>Horizontal: <input type="number" id="hSplit" min="1" value="1"></p>
+        <p>padding: <input type="number" id="padding" min="0" value="10"></p>
+        <style>
+td.clicker-cell {
+    border: none;
+    padding: 10px;
+}
+
+div.click-area {
+    border: springgreen solid 3px;
+    background-color: violet;
+    text-align: center;
+    font-size: 100px;
+    font-weight: 100;
+    display: table-cell;
+    vertical-align: middle;
+    cursor: pointer;
+}
+        </style>
+
+        <script>
+width = window.innerWidth - 32;
+height = window.innerHeight - 32;
+
+elements = {
+    table: document.querySelector("#clicker-outline"),
+    vSplit: document.querySelector("#vSplit"),
+    hSplit: document.querySelector("#hSplit"),
+    padding: document.querySelector("#padding"),
+};
+
+vSplit = 0;
+hSplit = 0;
+padding = 10;
+
+for(i=0;i<document.styleSheets.length;i++) {
+    for(j=0;j<document.styleSheets[i].cssRules.length;j++) {
+        if(document.styleSheets[i].cssRules[j].selectorText === "td.clicker-cell") {
+            elements.cellStyle = document.styleSheets[i].cssRules[j];
+        }
+
+        if(document.styleSheets[i].cssRules[j].selectorText === "div.click-area") {
+            elements.innerCellStyle = document.styleSheets[i].cssRules[j];
+        }
+
+        if(elements.cellStyle && elements.innerCellStyle ) {
+            break;
+        }
+    }
+}
+
+function countUp(e) {
+    count = parseInt(e.target.innerText);
+    count++;
+    e.target.innerText = count;
+}
+
+function createCell() {
+    cell = document.createElement("td");
+    cell.setAttribute("class", "clicker-cell");
+    innerCell = document.createElement("div");
+    innerCell.setAttribute("class", "click-area");
+    innerCell.addEventListener("click",countUp);
+    innerCell.innerText = 0;
+    cell.append(innerCell);
+    return cell;
+}
+
+function addRow(count) {
+    for(i=0;i<count;i++) {
+        row = document.createElement("tr");
+        row.setAttribute("class", "clicker-row");
+        for(j=0;j<hSplit;j++) {
+            cell = createCell();
+            row.append(cell);
+        }
+        elements.table.append(row);
+    }
+}
+
+function removeRow(count) {
+    for(i=0;i<count;i++) {
+        elements.table.removeChild(elements.table.lastElementChild);
+    }
+}
+
+function addColumn(count) {
+    for(i=0; i<count; i++) {
+        rows = document.querySelectorAll("tr.clicker-row");
+        for(j=0; j<rows.length; j++) {
+            cell = createCell();
+            rows[j].append(cell);
+        }
+    }
+}
+
+function removeColumn(count) {
+    for(i=0; i<count; i++) {
+        rows = document.querySelectorAll("tr.clicker-row");
+        for(j=0; j<rows.length; j++) {
+            rows[j].removeChild(rows[j].lastElementChild);
+        }
+    }
+}
+
+function updateStyle() {
+    elements.innerCellStyle.style.width = ""+(width / hSplit - 24)+"px";
+    elements.innerCellStyle.style.height = ""+(height / vSplit - 24)+"px";
+}
+
+function updateTable() {
+    tmp = parseInt(elements.vSplit.value)
+    if(vSplit!=tmp) {
+        if(tmp>vSplit) {
+            addRow(tmp-vSplit);
+        } else {
+            removeRow(vSplit-tmp);
+        }
+        vSplit = tmp;
+    }
+
+    tmp = parseInt(elements.hSplit.value);
+    if(hSplit!=tmp) {
+        if(tmp>hSplit) {
+            addColumn(tmp-hSplit);
+        } else {
+            removeColumn(hSplit-tmp);
+        }
+        hSplit = tmp;
+    }
+
+    updateStyle();
+}
+
+function changePadding(e) {
+    p = parseInt(e.target.value);
+    elements.cellStyle.style.padding = ""+p+"px";
+}
+
+elements.padding.addEventListener("change", changePadding);
+elements.vSplit.addEventListener("change", updateTable);
+elements.hSplit.addEventListener("change", updateTable);
+
+updateTable();
+
+        </script>
+    </body>
+</html>
