@@ -1,0 +1,25 @@
+<html>
+<head><title>nRF52 Keyboard Initial Configuration</title></head>
+<body>
+    <script src="./nrf52_init.js"></script>
+    <div>
+        <button id="execute">Connect Keyboard</button>
+    </div>
+    <div>
+        <div><label for="row-count">Number of Keyboard Rows: </label><input type="number" id="row-count" min="0" max="30"></div>
+        <div><label for="col-count">Number of Keyboard Cols: </label><input type="number" id="col-count" min="0" max="30"></div>
+        <div><label for="row-text">Row Pins( decimical, sepaleted by ","): </label><input type="text" id="row-text"></div>
+        <div><label for="col-text">Col Pins( decimical, sepaleted by ","): </label><input type="text" id="col-text"></div>
+    </div>
+    <button id="send">Send</button>
+    <div>
+        
+        <div id="received">
+            received data:
+            <div>Rows: <span id="received-rows"></span></div>
+            <div>Cols: <span id="received-cols"></span></div>
+        </div>
+    </div>
+        
+</body>
+</html>

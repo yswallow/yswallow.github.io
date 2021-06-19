@@ -1,0 +1,82 @@
+<html>
+<head><title>WebHID test</title></head>
+<body>
+<button id="execute">Connect</button>
+<input type="text" id="data"></input>
+<button id="send">Send</button>
+<div>
+received data:
+<div id="received"></div>
+</div>
+
+<script>
+var device;
+async function Connect(){
+    if("hid" in navigator) {
+        console.log("WebHID API available.");
+        
+        navigator.hid.addEventListener('connect', ({device}) => {
+            console.log(`HID connected: ${device.productName}`);
+        });
+        const filters = [
+            {
+                
+            }
+        ];
+        [device] = await navigator.hid.requestDevice({ filters });
+        
+        device.addEventListener("inputreport", (event) => {
+            console.log(event.data);
+            const view = new Uint8Array(event.data.buffer);
+            ary = [];
+            for(i=0;i<view.length;i++) {
+                ary.push(view[i].toString(16));
+            }
+            text = ary.join(",");
+            console.log( text );
+            document.getElementById("received").innerText = text;
+        });
+
+	console.log(`productName: ${device.productName}`); 
+        for (let collection of device.collections) {
+            console.log(`Usage: ${collection.usage}`);
+            console.log(`UsagePage: ${collection.usagePage}`);
+            for (let inputReport of collection.inputReports) {
+                console.log(`Input report: ${inputReport.reportId}`);
+                // Loop through inputReport.items
+            }
+
+            for (let outputReport of collection.outputReports) {
+                console.log(`Output report: ${outputReport.reportId}`);
+            // Loop through outputReport.items
+            }
+
+            for (let featureReport of collection.featureReports) {
+                console.log(`Feature report: ${featureReport.reportId}`);
+            // Loop through featureReport.items
+            }
+
+            // Loop through subcollections with collection.children
+        }
+        if(! device.opened) {
+            await device.open();
+            console.log( device );
+        }
+        device.sendReport(0x00, new Uint8Array([0x02,0x06]));
+        
+    } else {
+        alert("WebHID API not available.");
+    }
+}
+function send() {
+    text = document.getElementById("data").value;
+    hexes = text.split(",").map(i=>parseInt(i));
+    device.sendReport(0x00, new Uint8Array(hexes));
+}
+window.addEventListener("load",()=>{
+    document.getElementById("execute").addEventListener("click", Connect);
+    document.getElementById("send").addEventListener("click", send);
+});
+</script>
+</body>
+</html>
