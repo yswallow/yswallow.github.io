@@ -1,5 +1,5 @@
 var device;
-var col_count=0, row_count=0, col_pins=[], row_pins=[];
+var col_count=0, row_count=0, cntr_count=0, col_pins=[], row_pins=[];
 
 function two_digit_dec(num) {
     c = num.toString();
@@ -25,11 +25,13 @@ function parseHidResponse(event) {
         } else if( view[1] == 0x05 ) {
             row_pins = data_ary.slice();
         } else if( view[1]== 0x06 ) {
+            cntr_count = view[4];
             col_count = view[3];
             row_count = view[2];
         }
         document.getElementById("received-rows").innerText = row_pins.slice(0,row_count).map(c=>pinName(c)).join(",");
-        document.getElementById("received-cols").innerText = col_pins.slice(0,col_count).map(c=>pinName(c)).join(",");
+        document.getElementById("received-cols").innerText = col_pins.slice(0,(cntr_count?cntr_count:col_count)).map(c=>pinName(c)).join(",");
+        document.getElementById("received-cols-count").innerText = col_count;
     }
 }
 async function Connect(){
@@ -88,7 +90,8 @@ async function send() {
     await device.sendReport(0x00, new Uint8Array( [0x03, 0x04].concat(cols) ));
     _row_count = parseInt( document.getElementById("row-count").value );
     _col_count = parseInt( document.getElementById("col-count").value );
-    await device.sendReport(0x00, new Uint8Array( [0x03, 0x06, _row_count, _col_count] ));
+    _cntr_count = parseInt( document.getElementById("cntr-count").value );
+    await device.sendReport(0x00, new Uint8Array( [0x03, 0x06, _row_count, _col_count, _cntr_count] ));
 
     await device.sendReport(0x00, new Uint8Array([0x02,0x06]));
     await device.sendReport(0x00, new Uint8Array([0x02,0x04]));
