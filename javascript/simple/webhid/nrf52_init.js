@@ -21,21 +21,43 @@ function request_heatmap() {
         }
     }
 }
-function print_heatmap() {
-    result = [];
-    for(i=0;i<row_count;i++) {
-        if(heatmap[2*i]) {
-            col = heatmap[2*i] ? heatmap[2*i].concat(heatmap[2*i+1]) : heatmap[2*i];
-            sum = [];
-            for(j=0;j<col_count;j++) {
-                sum[j] = col[2*j]+(col[2*j+1]<<8);
+
+function print_heatmap(change_ev) {
+    request_heatmap();
+    reader = new FileReader();
+
+    reader.addEventListener("load", (ev)=>{
+        data = JSON.parse(ev.target.result);
+        keymap = data.layouts.keymap;
+        sorted_heatmap = [];
+        for(i=0;i<keymap.length;i++) {
+            row = keymap[i];
+            sorted_heatmap[i] = [];
+            for(j=0;j<keymap[i].length;j++) {
+                d = row[j].split(",").map(s=>parseInt(s));
+                sorted_heatmap[i][j] = heatmap[d[0]][d[1]];
             }
-            result[i] = sum.join(",");
         }
-    }
-    document.getElementById("heatmap-area").innerHTML = result.join("<br>");
+
+        document.getElementById("heatmap-area").innerHTML = 
+            "<table><tr><td>"+ 
+            sorted_heatmap.map(l=>l.join("</td><td>")).join("</td></tr><tr><td>") +
+            "</td></tr></table>";
+    })
+
+    file = document.getElementById("kle-file").files[0];
+    reader.readAsText(file);
 }
 
+function set_heatmap(row, shift, data) {
+    if(! heatmap[row]) {
+        heatmap[row] = [];
+    }
+
+    for(i=0;i<data.length/2;i++) {
+        heatmap[row][13*shift+i] = data[2*i]+(data[2*i+1]<<8);
+    }
+}
 function parseHidResponse(event) {
     const view = new Uint8Array(event.data.buffer);
     if( view[0] == 0x02 ) {
@@ -54,8 +76,7 @@ function parseHidResponse(event) {
             row_count = view[2];
         } else if(view[1]==0x80) {
             row2 = view[2]*2+view[3];
-            heatmap[row2] = data_ary.slice(2);
-            print_heatmap();
+            set_heatmap(view[2], view[3], data_ary.slice(2));
             return;
         }
         document.getElementById("received-rows").innerText = row_pins.slice(0,row_count).map(c=>pinName(c)).join(",");
@@ -129,5 +150,7 @@ async function send() {
 window.addEventListener("load",()=>{
     document.getElementById("execute").addEventListener("click", Connect);
     document.getElementById("send").addEventListener("click", send);
-    document.getElementById("get-heatmap").addEventListener("click", request_heatmap);
+    //document.getElementById("get-heatmap").addEventListener("click", request_heatmap);
+    document.getElementById("kle-file").addEventListener("change", print_heatmap);
+    document.getElementById("reload-heatmap").addEventListener("click", print_heatmap);
 });
