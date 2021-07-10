@@ -1,6 +1,7 @@
 <html>
 <head><title>nRF52 Keyboard Initial Configuration</title></head>
 <body>
+    <script src="webhid_common.js"></script>
     <script src="./nrf52_init.js"></script>
     <div>
         <button id="execute">Connect Keyboard</button>
@@ -21,18 +22,6 @@
             <div>Cols: <span id="received-cols"></span></div>
             <div>Keyboard cols count: <span id="received-cols-count"></span></div>
         </div>
-    </div>
-        
-    <div>
-        <button id="get-heatmap">Get Heatmap</button>
-        <div id="heatmap-area">
-
-        </div>
-        <div>
-            <label for="kle-file">キーボードレイアウトファイルを選択:</label><input type="file" id="kle-file">
-        </div>
-        <button id="reload-heatmap">reload</button>
-        
     </div>
 </body>
 </html>

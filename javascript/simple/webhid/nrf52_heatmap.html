@@ -1,0 +1,31 @@
+<html>
+<head><title>nRF52 Keyboard Heatmap</title></head>
+<body>
+    <style>
+        td {
+            width: 4em;
+            height: 3em;
+            border: solid 2px;
+            text-align: center;
+            }
+        table { border-spacing: 0px; }   
+    </style>
+    <script src="./webhid_common.js"></script>
+    <script src="./nrf52_heatmap.js"></script>
+    <div>
+        <button id="execute">Connect Keyboard</button>
+    </div>
+    
+    <div>
+        <button id="get-heatmap">Get Heatmap</button>
+        <div id="heatmap-area">
+
+        </div>
+        <div>
+            <label for="kle-file">キーボードレイアウトファイルを選択:</label><input type="file" id="kle-file">
+        </div>
+        <button id="reload-heatmap">reload</button>
+        
+    </div>
+</body>
+</html>
