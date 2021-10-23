@@ -3,22 +3,24 @@ const nrf52_common = {
     col_count: 0,
     row_count: 0,
     cntr_count: 0,
+    vendor_report_id: 0,
     col_pins: [],
     row_pins: [],
     pendingReport: false,
     pendingData: [],
-    sendReport: (...args) =>{
+    sendReport: function(args) {
         if(this.pendingReport) {
             this.pendingData.append(args)
             return;
         }
-        this.device.sendReport(...args);
+        console.log(args);
+        this.device.sendReport(this.vendor_report_id, args);
     },
     received: () => {
         if(this.pendingReport) {
             this.pendingReport = false;
             if(this.pendingData.length) {
-                this.device.sendReport(...this.pendingData.pop());
+                this.device.sendReport(this.vendor_report_id, this.pendingData.pop());
                 this.pendingReport = true;
             }
         }
@@ -34,7 +36,7 @@ async function Connect(){
         });
         const filters = [
             {
-                
+                usagePage: 0xFF60,
             }
         ];
         [device] = await navigator.hid.requestDevice({ filters });
@@ -54,6 +56,9 @@ async function Connect(){
             for (let outputReport of collection.outputReports) {
                 console.log(`Output report ID: ${outputReport.reportId}`);
             // Loop through outputReport.items
+                if(collection.usagePage == 0xFF60) {
+                    nrf52_common.vendor_report_id = outputReport.reportId;
+                } 
             }
 
             for (let featureReport of collection.featureReports) {
@@ -67,10 +72,9 @@ async function Connect(){
             await device.open();
             console.log( device );
         }
-        device.sendReport(0x00, new Uint8Array([0x02,0x06]));
-        device.sendReport(0x00, new Uint8Array([0x02,0x04]));
-        device.sendReport(0x00, new Uint8Array([0x02,0x05]));
-        
+        nrf52_common.sendReport(new Uint8Array([0x02,0x06]));
+        nrf52_common.sendReport(new Uint8Array([0x02,0x04]));
+        nrf52_common.sendReport(new Uint8Array([0x02,0x05]));
     } else {
         alert("WebHID API not available.");
     }

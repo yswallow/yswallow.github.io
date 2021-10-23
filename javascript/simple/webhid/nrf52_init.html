@@ -7,13 +7,17 @@
         <button id="execute">Connect Keyboard</button>
     </div>
     <div>
-        <div><label for="row-count">Number of Keyboard Rows: </label><input type="number" id="row-count" min="0" max="30"></div>
-        <div><label for="col-count">Number of Keyboard Cols: </label><input type="number" id="col-count" min="0" max="30"></div>
+        <div><label for="row-count">Number of Keyboard Rows: </label><input type="number" id="row-count" min="0" max="30" value="0"></div>
+        <div><label for="col-count">Number of Keyboard Cols: </label><input type="number" id="col-count" min="0" max="30" value="0"></div>
         <div><label for="cntr-count">Number of Keyboard Central Cols: </label><input type="number" id="cntr-count" min="0" max="30" value="0"></div>
         <div><label for="row-text">Row Pins( decimical, sepaleted by ","): </label><input type="text" id="row-text"></div>
         <div><label for="col-text">Col Pins( decimical, sepaleted by ","): </label><input type="text" id="col-text"></div>
+        <button id="send">Send</button>
+        <div><label for="power-led-enable">Enable Power LED: </label><input type="checkbox" id="power-led-enable"></div>
+        <div><label for="power-led-pin">Pin Number of Power LED: </label><input type="number" id="power-led-pin" min="0" max="48"></div>
+        <button id="send-additional">Send Additional Data</button>
     </div>
-    <button id="send">Send</button>
+    
     <div>
         
         <div id="received">

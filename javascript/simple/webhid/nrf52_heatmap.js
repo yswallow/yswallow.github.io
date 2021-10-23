@@ -3,12 +3,12 @@ const heatmap = [];
 function request_heatmap() {
     for(i=0;i<nrf52_common.row_count;i++) {
         setTimeout((j) => {
-            nrf52_common.sendReport(0x00, new Uint8Array([0x02,0x80,j,0]));
+            nrf52_common.sendReport(new Uint8Array([0x02,0x80,j,0]));
         }, i*250, i);
         
         if(nrf52_common.col_count>13) {
             setTimeout((j) => {
-                nrf52_common.sendReport(0x00, new Uint8Array([0x02,0x80,j,1]));
+                nrf52_common.sendReport(new Uint8Array([0x02,0x80,j,1]));
             }, (nrf52_common.row_count+i)*250, i)
         }
     }

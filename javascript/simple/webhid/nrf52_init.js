@@ -34,21 +34,29 @@ function parseHidResponse(event) {
     }
 }
 
+async function sendAdditional() {
+    power_led_enable = document.getElementById("power-led-enable").checked ? 1 : 0;
+    power_led_pin = parseInt(document.getElementById("power-led-pin").value);
+    await nrf52_common.sendReport( new Uint8Array( [0x03, 0x07, 0, 0, 0, 0, power_led_enable, power_led_pin] ));
+    await nrf52_common.sendReport(new Uint8Array([0x02, 0xFF]));
+}
+
 async function send() {
     rows = document.getElementById("row-text").value.split(",").map(i=>parseInt(i));
-    await nrf52_common.device.sendReport(0x00, new Uint8Array( [0x03, 0x05].concat(rows) ));
+    await nrf52_common.sendReport( new Uint8Array( [0x03, 0x05].concat(rows) ));
     cols = document.getElementById("col-text").value.split(",").map(i=>parseInt(i));
-    await nrf52_common.device.sendReport(0x00, new Uint8Array( [0x03, 0x04].concat(cols) ));
+    await nrf52_common.sendReport( new Uint8Array( [0x03, 0x04].concat(cols) ));
     _row_count = parseInt( document.getElementById("row-count").value );
     _col_count = parseInt( document.getElementById("col-count").value );
     _cntr_count = parseInt( document.getElementById("cntr-count").value );
-    await nrf52_common.device.sendReport(0x00, new Uint8Array( [0x03, 0x06, _row_count, _col_count, _cntr_count] ));
+    await nrf52_common.sendReport( new Uint8Array( [0x03, 0x06, _row_count, _col_count, _cntr_count] ));
 
-    await nrf52_common.device.sendReport(0x00, new Uint8Array([0x02,0x06]));
-    await nrf52_common.device.sendReport(0x00, new Uint8Array([0x02,0x04]));
-    await nrf52_common.device.sendReport(0x00, new Uint8Array([0x02,0x05]));
+    await nrf52_common.sendReport( new Uint8Array([0x02,0x06]));
+    await nrf52_common.sendReport( new Uint8Array([0x02,0x04]));
+    await nrf52_common.sendReport( new Uint8Array([0x02,0x05]));
 }
 window.addEventListener("load",()=>{
     document.getElementById("execute").addEventListener("click", Connect);
     document.getElementById("send").addEventListener("click", send);
+    document.getElementById("send-additional").addEventListener("click", sendAdditional);
 });
