@@ -37,7 +37,9 @@ function parseHidResponse(event) {
 async function sendAdditional() {
     power_led_enable = document.getElementById("power-led-enable").checked ? 1 : 0;
     power_led_pin = parseInt(document.getElementById("power-led-pin").value);
-    await nrf52_common.sendReport( new Uint8Array( [0x03, 0x07, 0, 0, 0, 0, power_led_enable, power_led_pin] ));
+    neopixel_pin = parseInt(document.getElementById("neopixel-pin").value);
+    neopixel_count = parseInt(document.getElementById("neopixel-count").value);
+    await nrf52_common.sendReport( new Uint8Array( [0x03, 0x07, 0, 0, 0, 0, power_led_enable, power_led_pin, 0, neopixel_count, neopixel_pin] ));
     await nrf52_common.sendReport(new Uint8Array([0x02, 0xFF]));
 }
 
