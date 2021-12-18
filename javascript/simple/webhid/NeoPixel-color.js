@@ -12,7 +12,7 @@ class Pixel {
     constructor(seqno) {
         this.seqno = seqno;
         this.color = {
-            red: 0x80, green: 0x80, blue: 0x80,
+            red: 0x40, green: 0x40, blue: 0x40,
             getColorCode: function() {
                 return "#"+get2digitHex(this.red)+get2digitHex(this.green)+get2digitHex(this.blue);
             },
@@ -39,15 +39,15 @@ class Pixel {
 pixelSeqNo = 0;
 pixels = [];
 
-function addPixel() {
-    pixel = new Pixel(pixelSeqNo++);
+function addPixel(seqNo) {
+    pixel = new Pixel(seqNo);
     pixels.push(pixel);
 
     return pixel;
 }
 
 function createColorElement(r,g,b,c) {
-    var s = document.createElement("span");
+    let s = document.createElement("span");
     s.r = r;
     s.g = g;
     s.b = b;
@@ -63,18 +63,15 @@ function createColorElement(r,g,b,c) {
     return s;
 }
 
-function createPixel(seqno) {
+function createPixelHTMLelement(pixel) {
     data = document.createElement("td");
-    
-    pixel = addPixel();
     pixel.setElement(data);
-    pixel.setSeqNo(seqno);
     data.pixel = pixel;
 
     d1 = document.createElement("div");
     d1.append( createColorElement(255,255,255,"W ") );
     d1.append( createColorElement(0,0,0,"Bk") );
-    d1.append( createColorElement(128,128,128,"Gy") );
+    d1.append( createColorElement(64,64,64,"Gy") );
     data.append(d1);
 
     d2 = document.createElement("div");
@@ -88,7 +85,12 @@ function createPixel(seqno) {
     d3.append( createColorElement(0,0,255,"Bl") );
     d3.append( createColorElement(0,255,255,"C ") );
     data.append(d3);
-    
+}
+
+function createPixel(seqno) {
+    pixel = addPixel(seqno);
+    createPixelHTMLelement(pixel);
+
     return pixel;
 }
 
@@ -132,7 +134,7 @@ function getGRBhex() {
 }
 
 function createNumberInput(init, min, max) {
-    el = document.createElement("input");
+    let el = document.createElement("input");
     el.setAttribute("type", "number");
     el.setAttribute("value", init);
     el.setAttribute("min", min);
@@ -145,17 +147,22 @@ function parseHidResponse(event) {}
 
 
 window.addEventListener("load", function(ev){
-    area = document.getElementById("pixel-area");
-    table = document.createElement("table");
+    let area = document.getElementById("pixel-area");
+    let table = document.createElement("table");
+    table.setAttribute("id","central-table");
     area.append(table);
-    confInput = document.getElementById("conf-csv");
+
+    document.getElementById("select-file").addEventListener("click", (ev)=>document.getElementById("conf-csv").click());
+    
+    let confInput = document.getElementById("conf-csv");
     confInput.addEventListener("change", async (ev)=>{
-        b = ev.target.files[0];
-        t = await b.text();
-        a = t.split("\n").filter(l=>l.length>0).map((l)=>l.split(",").map((i)=>parseInt(i)));
+        let table = document.getElementById("central-table");
+        let b = ev.target.files[0];
+        let t = await b.text();
+        let a = t.split("\n").filter(l=>l.length>0).map((l)=>l.split(",").map((i)=>parseInt(i)));
 
         a.forEach(l => {
-            tr = document.createElement("tr");
+            let tr = document.createElement("tr");
             table.append(tr);
 
             l.forEach(c => {
@@ -174,17 +181,17 @@ window.addEventListener("load", function(ev){
         nrf52_common.sendReport( new Uint8Array( [0x02, 0x10,] ));
     });
     document.getElementById("output-grb").addEventListener("click", async function() {
-        frame = getGRBhex();
-        l = frame.length;
+        let frame = getGRBhex();
+        let l = frame.length;
 
-        pattern_id = parseInt( document.getElementById("sequence-id").value );
-        frameNo = parseInt( document.getElementById("frame-no").value );
-        frameCount = parseInt( document.getElementById("frame-count").value );
-        interval = parseInt( document.getElementById("interval-ticks").value );
+        let pattern_id = parseInt( document.getElementById("sequence-id").value );
+        let frameNo = parseInt( document.getElementById("frame-no").value );
+        let frameCount = parseInt( document.getElementById("frame-count").value );
+        let interval = parseInt( document.getElementById("interval-ticks").value );
 
         nrf52_common.sendReport( new Uint8Array( [0x03, 0x11, pattern_id, frameCount, interval] ) );
         for (let i = 0; i < l/27+1; i++) {
-            data = frame.slice(i*27,(i+1)*27);
+            let data = frame.slice(i*27,(i+1)*27);
             //console.log(data);
             nrf52_common.sendReport( new Uint8Array( [0x03, 0x10, pattern_id, frameNo, i*9].concat(data) ));
         }
