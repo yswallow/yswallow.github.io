@@ -75,6 +75,9 @@ async function Connect(){
         nrf52_common.sendReport(new Uint8Array([0x02,0x06]));
         nrf52_common.sendReport(new Uint8Array([0x02,0x04]));
         nrf52_common.sendReport(new Uint8Array([0x02,0x05]));
+        if(connectCallback) {
+            connectCallback();
+        }
     } else {
         alert("WebHID API not available.");
     }

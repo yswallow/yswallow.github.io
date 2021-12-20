@@ -27,6 +27,11 @@ class Pixel {
         this.applyColor();
     }
 
+    setPosition(row, col) {
+        this.row = row;
+        this.col = col;
+    }
+
     applyColor() {
         this.element.setAttribute("style", "background-color: "+this.color.getColorCode()+";");
     }
@@ -37,10 +42,18 @@ class Pixel {
 }
 
 pixelSeqNo = 0;
-pixels = [];
+var pixels = [];
+pixels.sort_by_seqno = function() { 
+    return this.sort(function(a,b){
+            return (a.seqno > b.seqno) ? 1 : ( (a.seqno==b.seqno) ? 0 : -1 );
+        }); 
+}
+var sortedCentralPixels = [];
+var centralPixelArray = [];
+const segData = [0x77,0x24,0x5D,0x6D,0x2E,0x6B,0x7B,0x27,0x7F,0x6F];
 
 function addPixel(seqNo) {
-    pixel = new Pixel(seqNo);
+    let pixel = new Pixel(seqNo);
     pixels.push(pixel);
 
     return pixel;
@@ -53,7 +66,7 @@ function createColorElement(r,g,b,c) {
     s.b = b;
     s.setAttribute("style", "color: #"+get2digitHex(r)+get2digitHex(g)+get2digitHex(b)+";");
     s.addEventListener("click", (ev)=>{
-        pixel = ev.target.parentElement.parentElement.pixel;
+        let pixel = ev.target.parentElement.parentElement.pixel;
         pixel.color.red = ev.target.r;
         pixel.color.green = ev.target.g;
         pixel.color.blue = ev.target.b;
@@ -64,23 +77,23 @@ function createColorElement(r,g,b,c) {
 }
 
 function createPixelHTMLelement(pixel) {
-    data = document.createElement("td");
+    let data = document.createElement("td");
     pixel.setElement(data);
     data.pixel = pixel;
 
-    d1 = document.createElement("div");
+    let d1 = document.createElement("div");
     d1.append( createColorElement(255,255,255,"W ") );
     d1.append( createColorElement(0,0,0,"Bk") );
     d1.append( createColorElement(64,64,64,"Gy") );
     data.append(d1);
 
-    d2 = document.createElement("div");
+    let d2 = document.createElement("div");
     d2.append( createColorElement(255,0,0,"R ") );
     d2.append( createColorElement(255,255,0,"Y ") );
     d2.append( createColorElement(0,255,0,"Gn") );
     data.append(d2);
 
-    d3 = document.createElement("div");
+    let d3 = document.createElement("div");
     d3.append( createColorElement(255,0,255,"M ") );
     d3.append( createColorElement(0,0,255,"Bl") );
     d3.append( createColorElement(0,255,255,"C ") );
@@ -88,16 +101,16 @@ function createPixelHTMLelement(pixel) {
 }
 
 function createPixel(seqno) {
-    pixel = addPixel(seqno);
+    let pixel = addPixel(seqno);
     createPixelHTMLelement(pixel);
 
     return pixel;
 }
 
 function createDetailedPixel(seqno) {
-    data = document.createElement("td");
+    let data = document.createElement("td");
     
-    pixel = addPixel();
+    let pixel = addPixel();
     pixel.setElement(data);
     pixel.setSeqNo(seqno);
     data.pixel = pixel;
@@ -106,15 +119,15 @@ function createDetailedPixel(seqno) {
     seqno.addEventListener("change", function() { pixel = this.parentElement.pixel; pixel.seqno = parseInt(this.value);});
     data.append(seqno);
 */ 
-    r = createNumberInput(pixel.color.red, 0, 255);
+    let r = createNumberInput(pixel.color.red, 0, 255);
     r.addEventListener("change", function() { pixel = this.parentElement.pixel; pixel.color.red = parseInt(this.value); pixel.applyColor();});
     data.append(r);
 
-    g = createNumberInput(pixel.color.green, 0, 255);
+    let g = createNumberInput(pixel.color.green, 0, 255);
     g.addEventListener("change", function() { pixel = this.parentElement.pixel; pixel.color.green = parseInt(this.value); pixel.applyColor();});
     data.append(g);
     
-    b = createNumberInput(pixel.color.blue, 0, 255);
+    let b = createNumberInput(pixel.color.blue, 0, 255);
     b.addEventListener("change", function() { pixel = this.parentElement.pixel; pixel.color.blue = parseInt(this.value); pixel.applyColor();});
     data.append(b);
     
@@ -143,8 +156,117 @@ function createNumberInput(init, min, max) {
     return el;
 }
 
-function parseHidResponse(event) {}
+function setFullBlack() {
+    pixels.forEach( (p)=>{
+        p.color.green = p.color.red = p.color.blue = 0;
+    })
+}
 
+function setWhite(c0, c1, r0, r1,val) {
+    //console.log(c0,c1,r0,r1);
+    for(let c=c0;c<c1;c++) {
+        for(let r=r0;r<r1;r++) {
+            if(centralPixelArray[r][c] != 255) {
+                let color = sortedCentralPixels[centralPixelArray[r][c]].color;
+                if(val==1) {
+                    color.red = 255;
+                    color.green = 255;
+                    color.blue = 0;
+                } else if(val==2) {
+                    color.red = 0;
+                    color.green = 255;
+                    color.blue = 255;
+                } else {
+                    color.red = color.green = color.blue = val;
+                }
+                
+            }
+        }
+    }
+}
+
+function setSegments(s, width, shift,val) {
+    let seg = segData[s];
+    let rows = centralPixelArray.length;
+    let cols = centralPixelArray[0].length;
+    
+    let col_width = parseInt(width/3);
+    let col_amari = width - col_width*3;
+    let c0_b = shift;
+    let c1_b = c0_b + col_width;
+    let c2_b = c1_b + col_width + col_amari;
+    let c2_e = shift+width;
+
+    let row_height = parseInt(rows/5);
+    let row_amari = rows - row_height*5;
+    let r0_b = 0;
+    let r1_b = row_height;
+    let r2_b = r1_b + row_height + (row_amari>1 ? 1 : 0);
+    let r3_b = r2_b + row_height + (row_amari>2 ? 1 : 0);
+    let r4_b = r3_b + row_height + (row_amari>0 ? 1 : 0);
+    let r4_e = rows;
+
+    //console.log(c0_b,c1_b,c2_b,c2_e,r0_b,r1_b,r2_b,r3_b,r4_b,r4_e);
+    for(let i=0;i<8;i++) {
+        if( seg & (1<<i) ) {
+            switch(i){
+                case 0:
+                    setWhite(c0_b,c2_e,r0_b,r1_b,val);
+                    break;
+                case 1:
+                    setWhite(c0_b,c1_b,r0_b,r3_b,val);
+                    break;
+                case 2:
+                    setWhite(c2_b,c2_e,r0_b,r3_b,val);
+                    break;
+                case 3:
+                    setWhite(c0_b,c2_e,r2_b,r3_b,val);
+                    break;
+                case 4:
+                    setWhite(c0_b,c1_b,r2_b,r4_e,val);
+                    break;
+                case 5:
+                    setWhite(c2_b,c2_e,r2_b,r4_e,val);
+                    break;
+                case 6:
+                    setWhite(c0_b,c2_e,r4_b,r4_e,val);
+                    break;
+            }
+        }
+    }
+}
+
+function showSecond(s) {
+    let hier = parseInt( s / 10);
+    let lower = s % 10;
+    let rows = centralPixelArray.length;
+    let cols = centralPixelArray[0].length;
+    
+    //console.log(s);
+    setFullBlack();
+    setSegments(hier, parseInt(cols/2), 0, 1);
+    setSegments(lower,parseInt(cols/2), parseInt(cols/2), 2);
+
+    pixels.forEach( (p)=>{p.applyColor();} );
+}
+
+
+function setTime() {
+    let t = new Date();
+    let s = t.getSeconds();
+
+    showSecond(s);
+}
+
+function parseHidResponse(event) {
+    const view = new Uint8Array(event.data.buffer);
+    console.log("In:"+view);
+}
+
+function connectCallback() {
+    let t = new Date();
+    nrf52_common.sendReport(new Uint8Array([0x03,0x16,t.getHours(),t.getMinutes(),t.getSeconds()]));
+}
 
 window.addEventListener("load", function(ev){
     let area = document.getElementById("pixel-area");
@@ -160,21 +282,48 @@ window.addEventListener("load", function(ev){
         let b = ev.target.files[0];
         let t = await b.text();
         let a = t.split("\n").filter(l=>l.length>0).map((l)=>l.split(",").map((i)=>parseInt(i)));
+        centralPixelArray = a;
 
-        a.forEach(l => {
+        for(let row=0;row<a.length;row++) {
+            let l = a[row];
             let tr = document.createElement("tr");
             table.append(tr);
 
-            l.forEach(c => {
+            for(let col=0;col<l.length;col++) {
+                let c = l[col];
                 if(c==255) {
                     tr.append(document.createElement("td"));
                 } else {
-                    p = createPixel(c);
+                    let p = createPixel(c);
+                    p.setPosition(row, col);
                     tr.append(p.element);
                 }
-            });
-        });
+            }
+        }
+
+        sortedCentralPixels = pixels.sort_by_seqno();
+        for(let i=0;i<sortedCentralPixels.length;i++) {
+            let p = sortedCentralPixels[i];
+            centralPixelArray[p.row][p.col] = i;
+        }
     })
+
+    document.getElementById("check").addEventListener("click", function(){
+        nrf52_common.sendReport( new Uint8Array( [0x02, 0x15] ));
+        for(let i=0;i<centralPixelArray.length;i++) {
+            nrf52_common.sendReport( new Uint8Array( [0x02, 0x14, i] ));
+        }
+        
+    });
+
+    document.getElementById("clock").addEventListener("click", function(){
+        setInterval(setTime, 1000);
+        nrf52_common.sendReport( new Uint8Array( [0x03, 0x15, centralPixelArray.length, centralPixelArray[0].length]));
+        for(let i=0;i<centralPixelArray.length;i++) {
+            nrf52_common.sendReport( new Uint8Array( [[0x03, 0x14, i], centralPixelArray[i]].flat() ));
+        }
+        nrf52_common.sendReport( new Uint8Array( [0x02, 0x14,] ));
+    });
 
     document.getElementById("execute").addEventListener("click", Connect);
     document.getElementById("save-sequence").addEventListener("click", (ev)=>{
