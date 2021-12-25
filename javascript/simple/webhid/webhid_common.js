@@ -72,10 +72,8 @@ async function Connect(){
             await device.open();
             console.log( device );
         }
-        nrf52_common.sendReport(new Uint8Array([0x02,0x06]));
-        nrf52_common.sendReport(new Uint8Array([0x02,0x04]));
-        nrf52_common.sendReport(new Uint8Array([0x02,0x05]));
-        if(connectCallback) {
+        
+        if(typeof(connectCallback)=="function") {
             connectCallback();
         }
     } else {

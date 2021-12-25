@@ -57,6 +57,13 @@ async function send() {
     await nrf52_common.sendReport( new Uint8Array([0x02,0x04]));
     await nrf52_common.sendReport( new Uint8Array([0x02,0x05]));
 }
+
+function connectCallback() {
+    nrf52_common.sendReport(new Uint8Array([0x02,0x06]));
+    nrf52_common.sendReport(new Uint8Array([0x02,0x04]));
+    nrf52_common.sendReport(new Uint8Array([0x02,0x05]));
+}
+
 window.addEventListener("load",()=>{
     document.getElementById("execute").addEventListener("click", Connect);
     document.getElementById("send").addEventListener("click", send);
