@@ -1,81 +1,58 @@
 <html>
 <head><title>WebHID test</title></head>
 <body>
+<style>
+textarea#remap-data {
+    width: 32em;
+    height: 4em;
+}
+</style>
 <button id="execute">Connect</button>
 <input type="text" id="data"></input>
 <button id="send">Send</button>
+
 <div>
-received data:
-<div id="received"></div>
+    <textarea id="remap-data"></textarea>
+    <button id="send-remap">Send Remap</button>
 </div>
 
+<div>
+    received data:
+    <div id="received"></div>
+</div>
+
+<script src="./webhid_common.js"></script>
 <script>
-var device;
-async function Connect(){
-    if("hid" in navigator) {
-        console.log("WebHID API available.");
-        
-        navigator.hid.addEventListener('connect', ({device}) => {
-            console.log(`HID connected: ${device.productName}`);
-        });
-        const filters = [
-            {
-                
-            }
-        ];
-        [device] = await navigator.hid.requestDevice({ filters });
-        
-        device.addEventListener("inputreport", (event) => {
-            console.log(event.data);
-            const view = new Uint8Array(event.data.buffer);
-            ary = [];
-            for(i=0;i<view.length;i++) {
-                ary.push(view[i].toString(16));
-            }
-            text = ary.join(",");
-            console.log( text );
-            document.getElementById("received").innerText = text;
-        });
-
-	console.log(`productName: ${device.productName}`); 
-        for (let collection of device.collections) {
-            console.log(`Usage: ${collection.usage}`);
-            console.log(`UsagePage: ${collection.usagePage}`);
-            for (let inputReport of collection.inputReports) {
-                console.log(`Input report: ${inputReport.reportId}`);
-                // Loop through inputReport.items
-            }
-
-            for (let outputReport of collection.outputReports) {
-                console.log(`Output report: ${outputReport.reportId}`);
-            // Loop through outputReport.items
-            }
-
-            for (let featureReport of collection.featureReports) {
-                console.log(`Feature report: ${featureReport.reportId}`);
-            // Loop through featureReport.items
-            }
-
-            // Loop through subcollections with collection.children
-        }
-        if(! device.opened) {
-            await device.open();
-            console.log( device );
-        }
-        device.sendReport(0x00, new Uint8Array([0x02,0x06]));
-        
-    } else {
-        alert("WebHID API not available.");
-    }
+function parseHidResponse(event) {
+    const view = new Uint8Array(event.data.buffer);
+    document.getElementById("received").innerHTML = view;
 }
+
 function send() {
     text = document.getElementById("data").value;
     hexes = text.split(",").map(i=>parseInt(i));
-    device.sendReport(0x00, new Uint8Array(hexes));
+    nrf52_common.sendReport(new Uint8Array(hexes));
 }
+
+function getHexArray(text) {
+    var hexArray = text.split(" ").map(t=>[t.slice(0,2),t.slice(2,4)]).flat().map(s=>parseInt(s,16));
+    return hexArray;    
+}
+
+function send_remap() {
+    var text = document.getElementById("remap-data").value;
+    var higher_text = text.slice(0,39);
+    var pos_newline = text.indexOf("\n");
+    var lower_text = text.slice(pos_newline+1, pos_newline+40);
+    var data = getHexArray(higher_text);
+    data = data.concat( getHexArray(lower_text) );
+    nrf52_common.sendReport(new Uint8Array(data));
+}
+
 window.addEventListener("load",()=>{
     document.getElementById("execute").addEventListener("click", Connect);
     document.getElementById("send").addEventListener("click", send);
+    document.getElementById("send-remap").addEventListener("click", send_remap);
 });
 </script>
 </body>
