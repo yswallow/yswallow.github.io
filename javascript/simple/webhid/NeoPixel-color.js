@@ -326,9 +326,11 @@ window.addEventListener("load", function(ev){
     });
 
     document.getElementById("execute").addEventListener("click", Connect);
+
     document.getElementById("save-sequence").addEventListener("click", (ev)=>{
         nrf52_common.sendReport( new Uint8Array( [0x02, 0x10,] ));
     });
+
     document.getElementById("output-grb").addEventListener("click", async function() {
         let frame = getGRBhex();
         let l = frame.length;
@@ -345,4 +347,43 @@ window.addEventListener("load", function(ev){
             nrf52_common.sendReport( new Uint8Array( [0x03, 0x10, pattern_id, frameNo, i*9].concat(data) ));
         }
     });
-} )
+
+    document.getElementById("set-script").addEventListener("click", function() {
+        let userScript = "compute_pixels.push( function (frame, col, row) { ";
+        userScript += document.getElementById("user-script-input").value;
+        userScript += "});";
+        let s = document.createElement("script");
+        s.innerHTML = userScript;
+        document.body.appendChild(s);
+    });
+
+    document.getElementById("frame-count").addEventListener("change", function(ev) {
+        document.getElementById("frame-no").setAttribute("max", parseInt(ev.target.value)-1);
+    });
+
+    document.getElementById("frame-no").addEventListener("change", function() {
+        for(let i=0;i<pixels.length;i++) {
+            let p=pixels[i];
+            [r,g,b] = compute_pixels[compute_pixels.length-1](parseInt(document.getElementById("frame-no").value), p.row, p.col);
+            p.color.red = r;
+            p.color.green  = g;
+            p.color.blue = b;
+            p.applyColor();
+        }
+    });
+
+    document.getElementById("send-all").addEventListener("click",function() {
+        let n_element = document.getElementById("frame-no");
+        let frames = parseInt( document.getElementById("frame-count").value );
+        let send_report_button = document.getElementById("output-grb");
+        for(let i=0;i<frames;i++) {
+            n_element.value = i;
+            let change_ev = new Event("change");
+            let click_ev = new Event("click")
+            n_element.dispatchEvent(change_ev);
+            send_report_button.dispatchEvent(click_ev);
+        }
+    });
+} );
+
+var compute_pixels = [function(frame,col,row) { return [0x40,0x40,0x40]}];

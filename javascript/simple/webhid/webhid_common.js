@@ -29,11 +29,6 @@ const nrf52_common = {
 
 async function Connect(){
     if("hid" in navigator) {
-        console.log("WebHID API available.");
-        
-        navigator.hid.addEventListener('connect', ({device}) => {
-            console.log(`HID connected: ${device.productName}`);
-        });
         const filters = [
             {
                 usagePage: 0xFF60,
@@ -79,6 +74,14 @@ async function Connect(){
     } else {
         alert("WebHID API not available.");
     }
+}
+
+if("hid" in navigator) {
+    console.log("WebHID API available.");
+    
+    navigator.hid.addEventListener('connect', ({device}) => {
+        console.log(`HID connected: ${device.productName}`);
+    });
 }
 
 nrf52_common.connect = Connect;

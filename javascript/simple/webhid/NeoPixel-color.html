@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
@@ -7,6 +8,7 @@
         <script src="./webhid_common.js"></script>
         <script src="./NeoPixel-color.js"></script>
         <script src="./NeoPixel-color-periph.js"></script>
+        <script id="user-script"></script>
         <a href="/YBK-firmware/NeoPixel_Setting.html">usage</a>
         <div>
             <button id="execute">Connect Keyboard</button>
@@ -14,19 +16,19 @@
             <input type="file" id="conf-csv" hidden>
             <button id="select-file-periph">Select Right NeoPixel Map</button>
             <input type="file" id="conf-csv-periph" hidden>
-            <button id="clock">Use as Clock</button>
+            <button id="clock" hidden>Use as Clock</button>
             <button id="check">Check</button>
             <button id="save-sequence">Save</button>
         </div>
         <div>
             <h2>Sequence Config</h2>
-            <label for="sequence-id">Sequence ID: </label><input type="number" id="sequence-id" min="0" max="2">
-            <label for="frame-count">Frame count: </label><input type="number" id="frame-count" min="1" max="20">
-            <label for="interval-ticks">Interval in ticks (*5ms): </label><input type="number" id="interval-ticks" min="1" max="255">
+            <label for="sequence-id">Sequence ID: </label><input type="number" id="sequence-id" value="0" min="0" max="2">
+            <label for="frame-count">Frame count: </label><input type="number" id="frame-count" value="5" min="1" max="20">
+            <label for="interval-ticks">Interval in ticks (*5ms): </label><input type="number" id="interval-ticks" value="10" min="1" max="255">
         </div>
         <div>
             <h2>Frame Config</h2>
-            <label for="frame-no">Frame No.: </label><input type="number" id="frame-no" min="0" max="19">
+            <label for="frame-no">Frame No.: </label><input type="number" id="frame-no" value="0" min="0" max="19">
             <span id="pixel-parent">
                 <span id="pixel-area">
 
@@ -36,10 +38,21 @@
 
                 </span>
             </span>
-            
         </div>
-       
-        <button id="output-grb">Send report</button>
+
+        <div>
+            <button id="output-grb">Send report</button>
+            <button id="send-all">Send all</button>
+        </div>
+        
+        <div>
+            <h2>User Script</h2>
+            <p>Script must return [R,G,B] as 8bit unsigned integers.</p>
+            <pre>function compute_pixel(frame, col, row) {</pre>
+            <textarea id="user-script-input"></textarea>
+            <pre>}</pre>
+            <button id="set-script">apply</button>
+        </div>
         <style>
 table {
     width: 100%;
