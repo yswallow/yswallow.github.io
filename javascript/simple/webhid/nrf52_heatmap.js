@@ -23,11 +23,19 @@ function print_heatmap(change_ev) {
         keymap = data.layouts.keymap;
         sorted_heatmap = [];
         for(i=0;i<keymap.length;i++) {
-            row = keymap[i];
+            let row = keymap[i];
             sorted_heatmap[i] = [];
+            let cell_x = 0;
             for(j=0;j<keymap[i].length;j++) {
-                d = row[j].split(",").map(s=>parseInt(s));
-                sorted_heatmap[i][j] = heatmap[d[0]][d[1]];
+                if( typeof(row[j])=='string' ) {
+                    let d = row[j].split(",").map(s=>parseInt(s));
+                    sorted_heatmap[i][cell_x] = heatmap[d[0]][d[1]];
+                } else {
+                    if( typeof(row[j]["x"])=="number" ) {
+                        cell_x += row[j]["x"] - 1;
+                    }
+                }
+                cell_x += 1;
             }
         }
 
