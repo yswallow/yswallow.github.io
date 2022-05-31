@@ -1,0 +1,31 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>VIA2Keymap</title>
+</head>
+<body>
+    <style>
+textarea#keymap-area {
+    width: 80%;
+    height: 80%;
+}
+    </style>
+    <script src="./via2keymap.js"></script>
+    <script src="./webhid_common.js"></script>
+    <div>
+        <button id="connect" disabled>Connect Keyboard</button>
+    </div>
+    
+    <div>
+        
+        <textarea id="keymap-area">
+
+        </textarea>
+        <div>
+            <button id="info-file-button">キーボードレイアウトファイルを選択</button>
+            <input type="file" id="info-file-select" hidden>
+            <button id="print-keymap">キーマップを表示</button>
+        </div>
+    </div>
+</body>
+</html>
