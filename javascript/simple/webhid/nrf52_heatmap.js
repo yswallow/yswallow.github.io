@@ -71,6 +71,11 @@ function parseHidResponse(event) {
     }
 }
 
+function connectCallback() {
+    nrf52_common.sendReport(new Uint8Array([0x02,0x06]));
+    setTimeout(request_heatmap, 500);
+}
+
 window.addEventListener("load",()=>{
     document.getElementById("execute").addEventListener("click", nrf52_common.connect);
     document.getElementById("get-heatmap").addEventListener("click", request_heatmap);
