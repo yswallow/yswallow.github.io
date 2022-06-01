@@ -265,7 +265,7 @@ function parseHidResponse(event) {
 
 function connectCallback() {
     let t = new Date();
-    nrf52_common.sendReport(new Uint8Array([0x03,0x16,t.getHours(),t.getMinutes(),t.getSeconds()]));
+    nrf52_common.sendReport( [0x03,0x16,t.getHours(),t.getMinutes(),t.getSeconds()] );
 }
 
 window.addEventListener("load", function(ev){
@@ -309,26 +309,26 @@ window.addEventListener("load", function(ev){
     })
 
     document.getElementById("check").addEventListener("click", function(){
-        nrf52_common.sendReport( new Uint8Array( [0x02, 0x15] ));
+        nrf52_common.sendReport( [0x02, 0x15] );
         for(let i=0;i<centralPixelArray.length;i++) {
-            nrf52_common.sendReport( new Uint8Array( [0x02, 0x14, i] ));
+            nrf52_common.sendReport( [0x02, 0x14, i] );
         }
         
     });
 
     document.getElementById("clock").addEventListener("click", function(){
         setInterval(setTime, 1000);
-        nrf52_common.sendReport( new Uint8Array( [0x03, 0x15, centralPixelArray.length, centralPixelArray[0].length]));
+        nrf52_common.sendReport( [0x03, 0x15, centralPixelArray.length, centralPixelArray[0].length] );
         for(let i=0;i<centralPixelArray.length;i++) {
-            nrf52_common.sendReport( new Uint8Array( [[0x03, 0x14, i], centralPixelArray[i]].flat() ));
+            nrf52_common.sendReport( [[0x03, 0x14, i], centralPixelArray[i]].flat() );
         }
-        nrf52_common.sendReport( new Uint8Array( [0x02, 0x14,] ));
+        nrf52_common.sendReport( [0x02, 0x14,] );
     });
 
     document.getElementById("execute").addEventListener("click", Connect);
 
     document.getElementById("save-sequence").addEventListener("click", (ev)=>{
-        nrf52_common.sendReport( new Uint8Array( [0x02, 0x10,] ));
+        nrf52_common.sendReport( [0x02, 0x10,] );
     });
 
     document.getElementById("output-grb").addEventListener("click", async function() {
@@ -340,11 +340,11 @@ window.addEventListener("load", function(ev){
         let frameCount = parseInt( document.getElementById("frame-count").value );
         let interval = parseInt( document.getElementById("interval-ticks").value );
 
-        nrf52_common.sendReport( new Uint8Array( [0x03, 0x11, pattern_id, frameCount, interval] ) );
+        nrf52_common.sendReport( [0x03, 0x11, pattern_id, frameCount, interval] );
         for (let i = 0; i < l/27+1; i++) {
             let data = frame.slice(i*27,(i+1)*27);
             //console.log(data);
-            nrf52_common.sendReport( new Uint8Array( [0x03, 0x10, pattern_id, frameNo, i*9].concat(data) ));
+            nrf52_common.sendReport( [0x03, 0x10, pattern_id, frameNo, i*9].concat(data) );
         }
     });
 

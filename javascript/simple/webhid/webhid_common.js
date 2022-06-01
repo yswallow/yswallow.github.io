@@ -8,13 +8,16 @@ const nrf52_common = {
     row_pins: [],
     pendingReport: false,
     pendingData: [],
-    sendReport: function(args) {
+    sendReport: function(array) {
+        let item_count = array.length;
+        array.length = 32;
+        array.fill(0,item_count);
         if(this.pendingReport) {
-            this.pendingData.append(args)
+            this.pendingData.append(array)
             return;
         }
-        console.log(args);
-        this.device.sendReport(this.vendor_report_id, args);
+        console.log(array);
+        this.device.sendReport(this.vendor_report_id, new Uint8Array(array));
     },
     received: () => {
         if(this.pendingReport) {

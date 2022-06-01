@@ -7,10 +7,7 @@ const keyboardConf = {
 }
 
 function request_layer_count() {
-    let data = [0x11,0];
-    data.length = 32;
-    data.fill(0,2);
-    nrf52_common.sendReport(new Uint8Array(data));
+    nrf52_common.sendReport( [0x11,0] );
 }
 
 function request_keymap() {
@@ -29,10 +26,7 @@ function request_keymap() {
             }
 
             setTimeout((offset1, offset2, size) => {
-                let data = [0x12, offset1, offset2, size]
-                data.length = 32;
-                data.fill(0,4,32)
-                nrf52_common.sendReport(new Uint8Array(data));
+                nrf52_common.sendReport( [0x12, offset1, offset2, size] );
             }, (i*reports_per_layer+j)*100, offset>>8, offset&0x00FF, size);
         }
     }

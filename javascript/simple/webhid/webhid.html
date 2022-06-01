@@ -31,7 +31,7 @@ function parseHidResponse(event) {
 function send() {
     text = document.getElementById("data").value;
     hexes = text.split(",").map(i=>parseInt(i));
-    nrf52_common.sendReport(new Uint8Array(hexes));
+    nrf52_common.sendReport( hexes );
 }
 
 function getHexArray(text) {
@@ -46,7 +46,7 @@ function send_remap() {
     var lower_text = text.slice(pos_newline+1, pos_newline+40);
     var data = getHexArray(higher_text);
     data = data.concat( getHexArray(lower_text) );
-    nrf52_common.sendReport(new Uint8Array(data));
+    nrf52_common.sendReport( data );
 }
 
 window.addEventListener("load",()=>{

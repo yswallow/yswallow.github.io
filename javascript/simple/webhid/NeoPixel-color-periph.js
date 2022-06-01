@@ -56,7 +56,7 @@ window.addEventListener("load", function(ev){
     })
 
     document.getElementById("save-sequence").addEventListener("click", (ev)=>{
-        nrf52_common.sendReport( new Uint8Array( [0x02, 0x10,] ));
+        nrf52_common.sendReport( [0x02, 0x10,] );
     });
 
     document.getElementById("output-grb").addEventListener("click", async function() {
@@ -69,11 +69,11 @@ window.addEventListener("load", function(ev){
         let interval = parseInt( document.getElementById("interval-ticks").value );
         let bytes_per_packet = 9;
 
-        nrf52_common.sendReport( new Uint8Array( [0x03, 0x13, pattern_id, frameCount, interval] ) );
+        nrf52_common.sendReport( [0x03, 0x13, pattern_id, frameCount, interval] );
         for (let i = 0; i < l/bytes_per_packet+1; i++) {
             let data = frame.slice(i*bytes_per_packet,(i+1)*bytes_per_packet);
             //console.log(data);
-            nrf52_common.sendReport( new Uint8Array( [0x03, 0x12, pattern_id, frameNo, i*bytes_per_packet/3].concat(data) ));
+            nrf52_common.sendReport( [0x03, 0x12, pattern_id, frameNo, i*bytes_per_packet/3].concat(data) );
         }
     });
 } )
