@@ -92,7 +92,7 @@ function print_keymap() {
             if( i%keyboardConf.col_count==0 ) {
                 keymap_str += "\r\n";
             }
-            keymap_str += "0x"+keymap[l][i].toString(16);
+            keymap_str += getKeyname(keymap[l][i]);
             keymap_str += ", ";
         }
 
