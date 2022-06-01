@@ -50,6 +50,21 @@ function load_infofile(change_ev) {
     reader.readAsText(file);
 }
 
+function use_alternatives() {
+    keyboardConf.col_count = parseInt( document.getElementById("col-count-input").value );
+    keyboardConf.row_count = parseInt( document.getElementById("row-count-input").value );
+
+    let layout = [];
+    for(let r=0;r<keyboardConf.row_count;r++) {
+        for(let c=0;c<keyboardConf.col_count;c++) {
+            layout.push({"matrix": [r, c]});
+        }
+    }
+    keyboardConf.layout = layout;
+
+    document.getElementById("connect").removeAttribute("disabled");
+}
+
 function print_keymap() {
     let keymap = []
     let keymap_str = "";
@@ -124,4 +139,5 @@ window.addEventListener("load", function() {
     document.getElementById("connect").addEventListener("click", Connect);
     document.getElementById("print-keymap").addEventListener("click", print_keymap);
     document.getElementById("info-file-select").addEventListener("change", load_infofile);
+    document.getElementById("use-alternatives").addEventListener("click", use_alternatives);
 })
