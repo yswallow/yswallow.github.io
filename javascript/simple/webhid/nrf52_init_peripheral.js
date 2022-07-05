@@ -19,11 +19,11 @@ function parseHidResponse(event) {
             data_ary.push(view[i]);
         }
         console.log(data_ary.join(","));
-        if( view[1] == 0x04 ) {
+        if( view[1] == 0x84 ) {
             nrf52_common.col_pins = data_ary.slice();
-        } else if( view[1] == 0x05 ) {
+        } else if( view[1] == 0x85 ) {
             nrf52_common.row_pins = data_ary.slice();
-        } else if( view[1]== 0x06 ) {
+        } else if( view[1]== 0x86 ) {
             nrf52_common.cntr_count = view[4];
             nrf52_common.col_count = view[3];
             nrf52_common.row_count = view[2];
@@ -39,27 +39,32 @@ async function sendAdditional() {
     power_led_pin = parseInt(document.getElementById("power-led-pin").value);
     neopixel_pin = parseInt(document.getElementById("neopixel-pin").value);
     neopixel_count = parseInt(document.getElementById("neopixel-count").value);
-    await nrf52_common.sendReport( [0x03, 0x07, 0, 0, 0, 0, power_led_enable, power_led_pin, 0, neopixel_count, neopixel_pin] );
-    await nrf52_common.sendReport( [0x02, 0xFF] );
+    await nrf52_common.sendReport( [0x03, 0x87, 0, 0, 0, 0, power_led_enable, power_led_pin, 0, neopixel_count, neopixel_pin] );
+    await nrf52_common.sendReport( [0x02, 0x87] );
 }
 
 async function send() {
     rows = document.getElementById("row-text").value.split(",").map(i=>parseInt(i));
-    await nrf52_common.sendReport( [0x03, 0x05].concat(rows) );
+    setTimeout(function() { nrf52_common.sendReport( [0x03, 0x85].concat(document.getElementById("row-text").value.split(",").map(i=>parseInt(i))) ); },250);
     cols = document.getElementById("col-text").value.split(",").map(i=>parseInt(i));
-    await nrf52_common.sendReport( [0x03, 0x04].concat(cols) );
+    setTimeout(function() { nrf52_common.sendReport( [0x03, 0x84].concat(document.getElementById("col-text").value.split(",").map(i=>parseInt(i))) ); },500);
     _row_count = parseInt( document.getElementById("row-count").value );
     _col_count = parseInt( document.getElementById("col-count").value );
     _cntr_count = parseInt( document.getElementById("cntr-count").value );
-    await nrf52_common.sendReport( [0x03, 0x06, _row_count, _col_count, _cntr_count] );
+    setTimeout(function() {
+    	nrf52_common.sendReport( [0x03, 0x86, 
+    	parseInt( document.getElementById("row-count").value ),
+        parseInt( document.getElementById("col-count").value ),
+    	parseInt( document.getElementById("cntr-count").value ),
+    	] ) },750);
 
-    setTimeout(connectCallback, 500);
+    setTimeout(connectCallback, 1000);
 }
 
 function connectCallback() {
-    nrf52_common.sendReport([0x02,0x06]);
-    nrf52_common.sendReport([0x02,0x04]);
-    nrf52_common.sendReport([0x02,0x05]);
+    nrf52_common.sendReport([0x02,0x86]);
+    nrf52_common.sendReport([0x02,0x84]);
+    nrf52_common.sendReport([0x02,0x85]);
 }
 
 window.addEventListener("load",()=>{

@@ -25,7 +25,9 @@ textarea#remap-data {
 <script>
 function parseHidResponse(event) {
     const view = new Uint8Array(event.data.buffer);
-    document.getElementById("received").innerHTML = view;
+    let div = document.createElement("div");
+    div.innerHTML = view;
+    document.getElementById("received").appendChild(div);
 }
 
 function send() {
