@@ -7,7 +7,11 @@
     <style>
 textarea#keymap-area {
     width: 80%;
-    height: 80%;
+    height: 40%;
+}
+div.co-layer-keymap {
+    width: 80%;
+    /*height: 8em;*/
 }
     </style>
     <script src="./keycode.js"></script>
@@ -23,9 +27,11 @@ textarea#keymap-area {
 
         </textarea>
         <div>
-            <button id="info-file-button">キーボードレイアウトファイルを選択</button>
-            <input type="file" id="info-file-select" hidden>
-            <button id="print-keymap">キーマップを表示</button>
+            <button id="info-file-button">info.jsonを選択</button>
+            <input type="file" id="info-file-select" accept=".json" hidden>
+            <button id="request-keymap" hidden>更新</button>
+            <span id="in-progress" hidden>読み込み中</span>
+            <span id="finished" hidden>完了</span>
         </div>
     </div>
 
@@ -36,6 +42,29 @@ textarea#keymap-area {
         <label for="col-count-input">キーボードの列数</label>
         <input id="col-count-input" type="number" min="1">
         <button id="use-alternatives">代替値を使用</button>
+    </div>
+
+    <div>
+        <h3>VIAのレイヤーを複製</h3>
+        <div class="wrapper">
+            <div class="box">
+                <label for="input-copy-layer-from">コピー元のレイヤー番号</label>
+                <input id="input-copy-layer-from" type="number" min="0">
+                <div class="co-layer-keymap" id="keymap-copy-layer-from">
+                    <br><br><br><br><br><br>
+                </div>
+            </div>
+            <div class="box">
+                <label for="input-copy-layer-to">コピー先のレイヤー番号</label>
+                <input id="input-copy-layer-to" type="number" min="0">
+                <div class="co-layer-keymap" id="keymap-copy-layer-to">
+                    <br><br><br><br><br><br>
+                </div>
+            </div>
+            
+        </div>
+        <button id="copy-layer" disabled>レイヤーを複製</button>
+        <span id="copy-layer-finished" hidden>完了</span>
     </div>
 </body>
 </body>
