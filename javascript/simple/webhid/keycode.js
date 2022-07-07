@@ -41,7 +41,7 @@ const KEYCODES= [
     "KC_0",
     "KC_ENTER",
     "KC_ESCAPE",
-    "KC_DELETE",
+    "KC_BSPACE",
     "KC_TAB",
     "KC_SPACE",
     "KC_MINUS",
