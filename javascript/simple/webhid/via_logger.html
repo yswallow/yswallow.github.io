@@ -1,0 +1,36 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>VIA Logger</title>
+</head>
+<body>
+    <style>
+textarea#output-area {
+    width: 80%;
+    height: 40%;
+}
+div.co-layer-keymap {
+    width: 80%;
+    /*height: 8em;*/
+}
+    </style>
+    <script src="./keycode.js"></script>
+    <script src="./via_logger.js"></script>
+    <script src="./webhid_common.js"></script>
+    <div>
+        <button id="connect" disabled>Connect Keyboard</button>
+    </div>
+    <div>
+        <label for="row-count-input">キーボードの行数</label>
+        <input id="row-count-input" type="number" min="1">
+        <label for="col-count-input">キーボードの列数</label>
+        <input id="col-count-input" type="number" min="1">
+        <button id="set-keyboard-info">適用</button>
+    </div>
+    <div>
+        <textarea id="output-area">
+
+        </textarea>
+    </div>
+</body>
+</html>
