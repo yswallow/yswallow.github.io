@@ -4,10 +4,11 @@ function execute_fetch() {
     let url = document.getElementById("url").value;
     fetch(url).then( (res)=>{
         if(!res.ok) {
-            output_area.innerHTML = "ERROR";
-        } else {
-            output_area.innerHTML = res.text();
+            throw new Error();
         }
+        return res.text();
+    }).then( (res)=>{
+        output_area.innerHTML = res;
     });
 }
 
