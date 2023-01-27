@@ -1,5 +1,5 @@
 function execute_fetch() {
-    let url = document.getElementById("url");
+    let url = document.getElementById("url").value;
     fetch(url).then( (res)=>{
         if(!res.ok) {
             output_area.innerHTML = "ERROR";
