@@ -6,7 +6,7 @@ function execute_fetch() {
         if(!res.ok) {
             output_area.innerHTML = "ERROR";
         } else {
-            output_area.innerHTML = response.text();
+            output_area.innerHTML = res.text();
         }
     });
 }
