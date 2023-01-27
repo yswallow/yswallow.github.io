@@ -1,3 +1,5 @@
+let output_area;
+
 function execute_fetch() {
     let url = document.getElementById("url").value;
     fetch(url).then( (res)=>{
@@ -10,6 +12,6 @@ function execute_fetch() {
 }
 
 window.addEventListener("load", function() {
-    const output_area = document.getElementById("output-area");
+    output_area = document.getElementById("output-area");
     document.getElementById("exec").addEventListener("click", execute_fetch);
 })
